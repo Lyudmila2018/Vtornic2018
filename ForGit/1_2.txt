@@ -1,0 +1,41 @@
+cd d:\labs\Vtornic2018
+d:
+
+git clone https://github.com/Lyudmila2018/Vtornic2018.git
+cd vtornic2018
+git config user.name Lyudmila2018
+git config user.email lyudmilaadeeva5@gmail.com
+
+git status показывает статус в текущем каталоге
+git log проверка логов событий
+git pull проверка изменений на удаленном репо и мержит их с локальными репо
+git push origin master мердж изменений, может выдать ошибку, если на сервере были изменения
+git add -A добавить все, что есть в репо
+
+git add d:\Labs\Vtornic2018\ForGit\1.txt
+git commit
+
+git branch new_test создание новой ветки
+git branch проверка статуса веток, активная помечена звездочкой
+git checkout new_test переключение между ветками.
+git merge [назв. ветки] находясь на ветке с которой нужно слить ветку [назв.ветки] выполнить эту команду для их объединения.
+git branch -d [назв.ветки] удалить ветку
+
+git remote -v показывает список удаленных репо с полным адресом
+git fetch [имя удал. сервера] команда, что позволяет получить данные с удаленного сервера, которых нет у вас, при этом, 
+она не мерджит ваши наработки и новые данные, это нужно будет сделать вручную (в отличие от git pull)
+git remote show origin позволяет посмотреть полные данные про удаленный репо и его настройки
+git remote rename [старое имя] [новое имя] переименовать сокращение удаленного репо в новый
+git remote rm [имя] удаление ссылки на удал. репо
+
+git diff [назв.1]..[назв.2] чтобы увидеть разницу между двумя коммитами
+git checkout [commit name] [путь к фалу и его назв.] откатит файл до его состояния на момент указанного коммита 
+
+git revent HEAD откат до предыдущего состояния коммита
+git revent [commit name] откат до состояния указанного в коммите
+git mergetool граф.интерфейс для решения конфликтов
+
+git cat-file -p d670460b4b4aece5915caf5c68d12f560a9fe3e4 - команда для поиска по хешу содержимого
+This object type is called a blob. You can have Git tell you the object type of any object in Git, given its SHA-1 key, 
+with git cat-file -t:
+$ git cat-file -t 1f7a7a472abf3dd9643fd615f6da379c4acb3e3a
