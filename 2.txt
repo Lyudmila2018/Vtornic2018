@@ -1,0 +1,135 @@
+1. MATCH (p:Orders {name:"Order1"})<-[:BOUGHT_IN]-(c:Items)
+RETURN distinct c.name;
+2. MATCH (p:Customers {name:"Ann"})<-[:DIRECTED]-(c:Orders)
+RETURN distinct c.name;
+3. MATCH (p:Customers {name:"Ann"})<-[:DIRECTED]-(:Orders)<-[:BOUGHT_IN]-(c:Items)
+RETURN distinct c.name;
+4. MATCH (c:Items)<-[:LOOK]-(p:Customers {name:"Serg"})
+RETURN distinct c.name;
+5. Найти Items купленные вместе с конкретным Item (т.е. все Items входящие в Order(s) вместе с данным Item)
+match (it:Item{name:"powder"})-[:item_in_order]-??:Orders)<-[:item_in_order]-(name) return name
+match (it:Item{name:"powder"})<-[:bought]-(:Customer)-[:bought]-??name) return name 
+match (it:Item{name:"powder"})<-[:looked_at]-(:Customer)-[:bought]-??name) return name
+
+
+
+CREATE (Or6:Orders {name: 'Order6', order_number:'201513', date:'2015-04-14', total_sum:2000})
+CREATE (P3:Items {name:'Fly', produser:'FLY', price:540, diagonal:'5,4'})
+
+MATCH (a:Orders),(b:Items)
+WHERE a.name = 'Order6' AND b.name = 'IPhone6'
+CREATE (a)<-[r:BOUGHT_IN]-(b)
+
+MATCH (a:Customers),(b:Items)
+WHERE a.name = 'Serg' AND b.name = 'Samsung Galaxy'
+CREATE (a)-[r:LOOK]->(b)
+
+
+MATCH (a:Customers),(c:Orders)
+WHERE a.name = 'Serg' AND c.name = 'Order6'
+CREATE (a)<-[r:DIRECTED]-(c)
+
+
+
+MATCH (p:Customers)<-[:DIRECTED]-(:Orders)<-[:BOUGHT_IN]-(c:Items {name:"Shorts"})
+MATCH (l:Items)-[:BOUGHT_IN]-->(:Orders)-[:DIRECTED]-->(p:Customers)<-[:DIRECTED]-(:Orders)<-[:BOUGHT_IN]-(c:Items {name:"Shorts"})
+RETURN distinct p.name, l.name;
+
+
+MATCH (p:Customers)<-[:DIRECTED]-(:Orders)<-[:BOUGHT_IN]-(c:Items {name:"Shorts"})
+MATCH (p:Customers)<-[:DIRECTED]-(:Orders)<-[:BOUGHT_IN]-(l:Items)
+RETURN distinct p.name, l.name;
+
+
+MATCH (p:Customers)<-[:DIRECTED]-(b:Orders)<-[:BOUGHT_IN]-(c:Items {name:"Shorts"})
+MATCH (l:Items)<-[:LOOK]-(p:Customers) 
+WITH OUT 
+RETURN p,b,c,l
+
+MATCH (p:Orders {name:"Order6"})<-[:BOUGHT_IN]-(c:Items)-[:BOUGHT_IN]->(alter_p:Orders) 
+return distinct (alter_p.name),collect(c.name)
+
+MATCH (p:Orders {name:"Order1"})<-[:BOUGHT_IN]-(c:Items)-[:BOUGHT_IN]->(alter_items:Items) 
+return distinct(alter_Items.name), collect(p.name)
+
+
+MATCH (p:Orders {name:"Order6"})<-[:BOUGHT_IN]-(c:Items)-[:BOUGHT_IN]->(alter_p:Orders) 
+return distinct (alter_p.name),collect(c.name)
+
+
+MATCH (l:Items)<-[:LOOK]-(p:Customers)<-[:DIRECTED]-(b:Orders)<-[:BOUGHT_IN]-(c:Items {name:"Shorts"})-[:DIRECTED]->(alter_c:Items) return distinct (alter_c.name),collect(l.name)
+
+
+
+MATCH (p:Customers)<-[:DIRECTED]-(b:Orders)<-[:BOUGHT_IN]-(c:Items {name:"Shorts"})
+MATCH (l:Items)<-[:LOOK]-(p:Customers)
+RETURN p,b,c,l
+
+
+MATCH (p:Customers)<-[:DIRECTED]-(b:Orders)<-[:BOUGHT_IN]-(c:Items {name:"Shorts"})
+MATCH (l:Items)<-[:LOOK]-(p:Customers)
+MATCH (i:Items)-[:BOUGHT_IN]->(o:Orders)<-[:BOUGHT_IN]-(l:Items)
+RETURN distinct collect(i.Items)
+
+
+
+MATCH (p:Customers)<-[:DIRECTED]-(b:Orders)<-[:BOUGHT_IN]-(c:Items {name:"Shorts"})
+MATCH (l:Items)<-[:LOOK]-(p:Customers)
+MATCH (i:Items)-[:BOUGHT_IN]->(o:Orders)<-[:BOUGHT_IN]-(l:Items)<-[:LOOK]-(p:Customers)<-[:DIRECTED]-(b:Orders)<-[:BOUGHT_IN]-(c:Items {name:"Shorts"})
+RETURN distinct collect(l.name)
+
+
+
+MATCH (m:Items)-[:BOUGHT_IN]->(n:Orders)-[:DIRECTED]->(p:Customers)<-[:DIRECTED]-(b:Orders)<-[:BOUGHT_IN]-(c:Items {name:"Shorts"})
+RETURN p,b,c,m,n
+
+
+
+
+
+MATCH (a:Orders{name: 'Order1'}),(c:Items),(n:Orders{name:'Order2'}) 
+WHERE (n)<-[:BOUGHT_IN]-(c) OR (a)<-[:BOUGHT_IN]-(c) 
+return count(c), collect(c.name)
+
+MATCH (m:Items)-[:BOUGHT_IN]->(n:Orders)-[:DIRECTED]->(p:Customers)<-[:DIRECTED]-(b:Orders)<-[:BOUGHT_IN]-(c:Items {name:"Shorts"}),(o:Customers),(j:Items)<-[:LOOK]-(p:Customers)<-[:DIRECTED]-(b:Orders)<-[:BOUGHT_IN]-(c:Items {name:"Shorts"}) 
+WHERE (m)-[:BOUGHT_IN]->(n)-[:DIRECTED]->(o) OR (j)<-[:LOOK]-(o) 
+return collect(o.name),m,n,p,b,c,o,j
+
+
+
+
+
+MATCH (m:Items)-[:BOUGHT_IN]->(n:Orders)-[:DIRECTED]->(p:Customers)<-[:DIRECTED]-(b:Orders)<-[:BOUGHT_IN]-(c:Items {name:"Shorts"}),(c:Items)<-[:LOOK]-(p1:Customers {name:"Serg"}) 
+WHERE (m:Items)-[:BOUGHT_IN]->(n:Orders)-[:DIRECTED]->(p:Customers) AND (c:Items)<-[:LOOK]-(p:Customers) 
+return c,p1,p,b,c,m,n
+
+
+
+MATCH (p:Customers)<-[:DIRECTED]-(b:Orders)<-[:BOUGHT_IN]-(c:Items {name:"Shorts"}),(p:Customers),(l:Items)<-[:LOOK]-(p:Customers)
+WHERE (p:Customers)<-[:DIRECTED]-(b:Orders)<-[:BOUGHT_IN]-(c:Items {name:"Shorts"}) AND (l:Items)<-[:LOOK]-(p:Customers)
+RETURN collect(p.name),p,b,c,l
+
+
+
+Товар, который был просмотрен, но не куплен.
+MATCH (network:Network {name: 'Network1'})<-[:APPEARANCE]-(ego:Ego)-[:APPEARANCE]->(alter_network:Network) 
+return distinct(alter_network.name), count(ego), collect(ego.name)
+
+
+MATCH (m:Items)-[:BOUGHT_IN]->(n:Orders)-[:DIRECTED]->(p:Customers)<-[:DIRECTED]-(b:Orders)<-[:BOUGHT_IN]-(c:Items {name:"Shorts"})-[:BOUGHT_IN]->(b:Orders)-[:DIRECTED]->(p:Customers)<-[:LOOK]-(l:Items)
+return count(p), collect(l.name)
+
+MATCH (c:Items {name:"Shorts"})-[:BOUGHT_IN]->(b:Orders)-[:DIRECTED]->(p:Customers)-[:LOOK]->(a:Items),(c1:Items {name:"Shorts"})-[:BOUGHT_IN]->(b1:Orders)-[:DIRECTED]->(p1:Customers)<-[:DIRECTED]-(b2:Orders)<-[:BOUGHT_IN]-(c3:Items)
+WITH collect(a.name) AS Look, collect(c3.name) AS By
+RETURN [x IN Look wihtout (x IN By)];
+
+
+
+
+
+MATCH (c:Items {name:"Shorts"})-[:BOUGHT_IN]->(b:Orders)-[:DIRECTED]->(p:Customers)-[:LOOK]->(a:Items),(c1:Items {name:"Shorts"})-[:BOUGHT_IN]->(b1:Orders)-[:DIRECTED]->(p1:Customers)<-[:DIRECTED]-(b2:Orders)<-[:BOUGHT_IN]-(c3:Items)
+WHERE a.name IN c3.name
+RETURN distinct (a.name)
+
+MATCH (c:Items {name:"Shorts"})-[:BOUGHT_IN]->(b:Orders)-[:DIRECTED]->(p:Customers)-[:LOOK]->(a:Items),(c1:Items {name:"Shorts"})-[:BOUGHT_IN]->(b1:Orders)-[:DIRECTED]->(p1:Customers)<-[:DIRECTED]-(b2:Orders)<-[:BOUGHT_IN]-(c3:Items)
+RETURN distinct (a.name),a,c3,c,b,p,c1,b1,p1,b2
